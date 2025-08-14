@@ -36,15 +36,15 @@ class Dashboards(Construct):
             dashboard_name=f"GoldenPath-{env_name}",
             period_override=cloudwatch.PeriodOverride.AUTO,
             start="-PT6H",  # Last 6 hours
-            widgets=[
-                [self._create_alb_widgets()],
-                [self._create_ecs_widgets()],
-                [self._create_rds_widgets()],
-                [self._create_waf_widgets()],
-            ],
         )
 
-    def _create_alb_widgets(self) -> cloudwatch.Row:
+        # Add widgets to dashboard
+        self.dashboard.add_widgets(self._create_alb_widgets())
+        self.dashboard.add_widgets(self._create_ecs_widgets())
+        self.dashboard.add_widgets(self._create_rds_widgets())
+        self.dashboard.add_widgets(self._create_waf_widgets())
+
+    def _create_alb_widgets(self):
         """Create ALB monitoring widgets"""
         # ALB Request Count
         request_count_widget = cloudwatch.GraphWidget(
@@ -150,14 +150,14 @@ class Dashboards(Construct):
             height=6,
         )
 
-        return cloudwatch.Row(
+        return [
             request_count_widget,
             response_time_widget,
             http_codes_widget,
             target_health_widget,
-        )
+        ]
 
-    def _create_ecs_widgets(self) -> cloudwatch.Row:
+    def _create_ecs_widgets(self):
         """Create ECS monitoring widgets"""
         # ECS CPU Utilization
         cpu_widget = cloudwatch.GraphWidget(
@@ -234,11 +234,9 @@ class Dashboards(Construct):
             height=6,
         )
 
-        return cloudwatch.Row(
-            cpu_widget, memory_widget, task_count_widget, request_per_target_widget
-        )
+        return [cpu_widget, memory_widget, task_count_widget, request_per_target_widget]
 
-    def _create_rds_widgets(self) -> cloudwatch.Row:
+    def _create_rds_widgets(self):
         """Create RDS monitoring widgets"""
         # Get database identifier
         if hasattr(self.database, "cluster_identifier"):
@@ -324,14 +322,14 @@ class Dashboards(Construct):
             height=6,
         )
 
-        return cloudwatch.Row(
+        return [
             rds_cpu_widget,
             rds_connections_widget,
             rds_storage_widget,
             rds_latency_widget,
-        )
+        ]
 
-    def _create_waf_widgets(self) -> cloudwatch.Row:
+    def _create_waf_widgets(self):
         """Create WAF monitoring widgets"""
         # WAF Allowed vs Blocked Requests
         waf_requests_widget = cloudwatch.GraphWidget(
@@ -368,4 +366,4 @@ class Dashboards(Construct):
             height=6,
         )
 
-        return cloudwatch.Row(waf_requests_widget)
+        return [waf_requests_widget]

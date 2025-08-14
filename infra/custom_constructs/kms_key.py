@@ -27,11 +27,7 @@ class KmsKey(Construct):
             iam.PolicyStatement(
                 sid="AllowCloudWatchLogs",
                 effect=iam.Effect.ALLOW,
-                principals=[
-                    iam.ServicePrincipal(
-                        f"logs.{self.node.get_context('@aws-cdk/core:target-partitions')[0] if self.node.try_get_context('@aws-cdk/core:target-partitions') else 'aws'}.amazonaws.com"
-                    )
-                ],
+                principals=[iam.ServicePrincipal("logs.amazonaws.com")],
                 actions=[
                     "kms:Encrypt",
                     "kms:Decrypt",

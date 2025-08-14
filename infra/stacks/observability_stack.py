@@ -7,9 +7,9 @@ from aws_cdk import (
     Tags,
 )
 from constructs import Construct
-from constructs.dashboards import Dashboards
-from constructs.alarms import Alarms
-from constructs.log_metrics import LogMetrics
+from custom_constructs.dashboards import Dashboards
+from custom_constructs.alarms import Alarms
+from custom_constructs.log_metrics import LogMetrics
 from typing import Optional
 
 

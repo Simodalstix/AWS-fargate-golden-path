@@ -16,7 +16,7 @@ class LoggingBucket(Construct):
         self.bucket = s3.Bucket(
             self,
             "Bucket",
-            bucket_name=f"golden-path-alb-logs-{env_name}-{self.node.addr}",
+            bucket_name=f"golden-path-alb-logs-{env_name}-{self.node.unique_id}",
             encryption=s3.BucketEncryption.KMS,
             encryption_key=kms_key,
             block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
@@ -69,21 +69,23 @@ class LoggingBucket(Construct):
         region = self.node.try_get_context("@aws-cdk/core:target-partitions") or "aws"
 
         # For now, we'll use a more generic approach that works across regions
+        from aws_cdk import aws_iam as iam
+
         self.bucket.add_to_resource_policy(
-            s3.PolicyStatement(
+            iam.PolicyStatement(
                 sid="ALBLogDelivery",
-                effect=s3.Effect.ALLOW,
-                principals=[s3.ServicePrincipal("elasticloadbalancing.amazonaws.com")],
+                effect=iam.Effect.ALLOW,
+                principals=[iam.ServicePrincipal("elasticloadbalancing.amazonaws.com")],
                 actions=["s3:PutObject"],
                 resources=[f"{self.bucket.bucket_arn}/AWSLogs/*"],
             )
         )
 
         self.bucket.add_to_resource_policy(
-            s3.PolicyStatement(
+            iam.PolicyStatement(
                 sid="ALBLogDeliveryWrite",
-                effect=s3.Effect.ALLOW,
-                principals=[s3.ServicePrincipal("elasticloadbalancing.amazonaws.com")],
+                effect=iam.Effect.ALLOW,
+                principals=[iam.ServicePrincipal("elasticloadbalancing.amazonaws.com")],
                 actions=["s3:PutObject"],
                 resources=[f"{self.bucket.bucket_arn}/*"],
                 conditions={
@@ -93,10 +95,10 @@ class LoggingBucket(Construct):
         )
 
         self.bucket.add_to_resource_policy(
-            s3.PolicyStatement(
+            iam.PolicyStatement(
                 sid="ALBLogDeliveryAclCheck",
-                effect=s3.Effect.ALLOW,
-                principals=[s3.ServicePrincipal("elasticloadbalancing.amazonaws.com")],
+                effect=iam.Effect.ALLOW,
+                principals=[iam.ServicePrincipal("elasticloadbalancing.amazonaws.com")],
                 actions=["s3:GetBucketAcl"],
                 resources=[self.bucket.bucket_arn],
             )

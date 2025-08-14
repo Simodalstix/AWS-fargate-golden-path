@@ -29,18 +29,15 @@ class LogMetrics(Construct):
             self,
             "ErrorTypeMetricFilter",
             log_group=self.log_group,
-            metric_namespace="GoldenPath/Application",
-            metric_name="ErrorCount",
             filter_pattern=logs.FilterPattern.exists("$.errorType"),
-            metric_value="1",
-            default_value=0,
-            metric_transformation=logs.MetricTransformation(
-                metric_namespace="GoldenPath/Application",
-                metric_name="ErrorCount",
-                metric_value="1",
-                default_value=0,
-                dimensions={"Environment": self.env_name, "ErrorType": "$.errorType"},
-            ),
+            metric_transformations=[
+                logs.MetricTransformation(
+                    metric_namespace="GoldenPath/Application",
+                    metric_name="ErrorCount",
+                    metric_value="1",
+                    default_value=0,
+                )
+            ],
         )
         self.metric_filters.append(error_type_filter)
 
@@ -50,21 +47,18 @@ class LogMetrics(Construct):
             self,
             "Status5xxMetricFilter",
             log_group=self.log_group,
-            metric_namespace="GoldenPath/Application",
-            metric_name="Status5xxCount",
             filter_pattern=logs.FilterPattern.all(
                 logs.FilterPattern.exists("$.status"),
                 logs.FilterPattern.number_value("$.status", ">=", 500),
             ),
-            metric_value="1",
-            default_value=0,
-            metric_transformation=logs.MetricTransformation(
-                metric_namespace="GoldenPath/Application",
-                metric_name="Status5xxCount",
-                metric_value="1",
-                default_value=0,
-                dimensions={"Environment": self.env_name, "StatusCode": "$.status"},
-            ),
+            metric_transformations=[
+                logs.MetricTransformation(
+                    metric_namespace="GoldenPath/Application",
+                    metric_name="Status5xxCount",
+                    metric_value="1",
+                    default_value=0,
+                )
+            ],
         )
         self.metric_filters.append(status_5xx_filter)
 
@@ -74,18 +68,15 @@ class LogMetrics(Construct):
             self,
             "LatencyMetricFilter",
             log_group=self.log_group,
-            metric_namespace="GoldenPath/Application",
-            metric_name="RequestLatency",
             filter_pattern=logs.FilterPattern.exists("$.latencyMs"),
-            metric_value="$.latencyMs",
-            default_value=0,
-            metric_transformation=logs.MetricTransformation(
-                metric_namespace="GoldenPath/Application",
-                metric_name="RequestLatency",
-                metric_value="$.latencyMs",
-                default_value=0,
-                dimensions={"Environment": self.env_name, "Path": "$.path"},
-            ),
+            metric_transformations=[
+                logs.MetricTransformation(
+                    metric_namespace="GoldenPath/Application",
+                    metric_name="RequestLatency",
+                    metric_value="$.latencyMs",
+                    default_value=0,
+                )
+            ],
         )
         self.metric_filters.append(latency_filter)
 
@@ -95,22 +86,15 @@ class LogMetrics(Construct):
             self,
             "RequestCountMetricFilter",
             log_group=self.log_group,
-            metric_namespace="GoldenPath/Application",
-            metric_name="RequestCount",
             filter_pattern=logs.FilterPattern.exists("$.requestId"),
-            metric_value="1",
-            default_value=0,
-            metric_transformation=logs.MetricTransformation(
-                metric_namespace="GoldenPath/Application",
-                metric_name="RequestCount",
-                metric_value="1",
-                default_value=0,
-                dimensions={
-                    "Environment": self.env_name,
-                    "Path": "$.path",
-                    "Method": "$.method",
-                },
-            ),
+            metric_transformations=[
+                logs.MetricTransformation(
+                    metric_namespace="GoldenPath/Application",
+                    metric_name="RequestCount",
+                    metric_value="1",
+                    default_value=0,
+                )
+            ],
         )
         self.metric_filters.append(request_count_filter)
 

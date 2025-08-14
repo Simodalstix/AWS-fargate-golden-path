@@ -15,9 +15,9 @@ from aws_cdk import (
     Tags,
 )
 from constructs import Construct
-from constructs.kms_key import KmsKey
-from constructs.logging_bucket import LoggingBucket
-from constructs.waf_web_acl import WafWebAcl
+from custom_constructs.kms_key import KmsKey
+from custom_constructs.logging_bucket import LoggingBucket
+from custom_constructs.waf_web_acl import WafWebAcl
 
 
 class ComputeStack(Stack):

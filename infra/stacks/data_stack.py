@@ -137,7 +137,7 @@ class DataStack(Stack):
             self,
             "AuroraCluster",
             engine=rds.DatabaseClusterEngine.aurora_postgres(
-                version=rds.AuroraPostgresEngineVersion.VER_15_4
+                version=rds.AuroraPostgresEngineVersion.VER_15_3
             ),
             credentials=rds.Credentials.from_secret(self.db_secret),
             writer=rds.ClusterInstance.serverless_v2("writer"),
@@ -152,8 +152,8 @@ class DataStack(Stack):
             ),
             security_groups=[self.db_security_group],
             subnet_group=self.db_subnet_group,
-            database_name="goldenpath",
-            backup_retention=Duration.days(7),
+            default_database_name="goldenpath",
+            backup=rds.BackupProps(retention=Duration.days(7)),
             deletion_protection=False,  # Set to True for production
             removal_policy=RemovalPolicy.DESTROY,  # Set to RETAIN for production
             cluster_identifier=f"golden-path-aurora-{self.env_name}",
@@ -169,7 +169,7 @@ class DataStack(Stack):
             self,
             "PostgreSQLInstance",
             engine=rds.DatabaseInstanceEngine.postgres(
-                version=rds.PostgresEngineVersion.VER_15_4
+                version=rds.PostgresEngineVersion.VER_15_3
             ),
             instance_type=ec2.InstanceType.of(
                 ec2.InstanceClass.T3, ec2.InstanceSize.MICRO
@@ -181,7 +181,7 @@ class DataStack(Stack):
             ),
             security_groups=[self.db_security_group],
             subnet_group=self.db_subnet_group,
-            database_name="goldenpath",
+            default_database_name="goldenpath",
             backup_retention=Duration.days(7),
             deletion_protection=False,
             removal_policy=RemovalPolicy.DESTROY,
@@ -210,7 +210,7 @@ class DataStack(Stack):
             ),
             security_groups=[self.db_security_group],
             subnet_group=self.db_subnet_group,
-            database_name="goldenpath",
+            default_database_name="goldenpath",
             backup_retention=Duration.days(7),
             deletion_protection=False,
             removal_policy=RemovalPolicy.DESTROY,

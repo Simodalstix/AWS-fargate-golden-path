@@ -45,8 +45,6 @@ class NetworkStack(Stack):
         Tags.of(self.vpc).add("Project", "ECS-Fargate-Golden-Path")
 
         # Create VPC Flow Logs
-        flow_log_role = ec2.FlowLogResourceType.from_flow_log_resource_type("VPC")
-
         self.vpc.add_flow_log(
             "VPCFlowLog",
             destination=ec2.FlowLogDestination.to_cloud_watch_logs(),
