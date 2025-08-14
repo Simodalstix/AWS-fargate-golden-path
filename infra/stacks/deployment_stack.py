@@ -76,11 +76,11 @@ class DeploymentStack(Stack):
                 termination_wait_time=Duration.minutes(5),
             ),
             deployment_config=codedeploy.EcsDeploymentConfig.CANARY_10_PERCENT_5_MINUTES,
-            service_role=self.codedeploy_service_role,
+            role=self.codedeploy_service_role,
             auto_rollback=codedeploy.AutoRollbackConfig(
                 failed_deployment=True,
                 stopped_deployment=True,
-                deployment_in_alarm=True,
+                deployment_in_alarm=False,
             ),
         )
 

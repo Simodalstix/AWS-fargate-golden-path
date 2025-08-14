@@ -1,4 +1,4 @@
-from aws_cdk import aws_wafv2 as wafv2, aws_cloudwatch as cloudwatch, CfnOutput
+from aws_cdk import aws_wafv2 as wafv2, aws_cloudwatch as cloudwatch, CfnOutput, Stack
 from constructs import Construct
 
 
@@ -109,7 +109,7 @@ class WafWebAcl(Construct):
                     metric_name="AllowedRequests",
                     dimensions_map={
                         "WebACL": self.web_acl.name,
-                        "Region": self.region,
+                        "Region": Stack.of(self).region,
                         "Rule": "ALL",
                     },
                     statistic="Sum",
@@ -119,7 +119,7 @@ class WafWebAcl(Construct):
                     metric_name="BlockedRequests",
                     dimensions_map={
                         "WebACL": self.web_acl.name,
-                        "Region": self.region,
+                        "Region": Stack.of(self).region,
                         "Rule": "ALL",
                     },
                     statistic="Sum",

@@ -1,5 +1,6 @@
 from aws_cdk import aws_s3 as s3, aws_kms as kms, RemovalPolicy, Duration
 from constructs import Construct
+import hashlib
 
 
 class LoggingBucket(Construct):
@@ -16,7 +17,7 @@ class LoggingBucket(Construct):
         self.bucket = s3.Bucket(
             self,
             "Bucket",
-            bucket_name=f"golden-path-alb-logs-{env_name}-{self.node.unique_id}",
+            bucket_name=f"golden-alb-logs-{env_name}-{hashlib.md5(self.node.addr.encode()).hexdigest()[:8]}",
             encryption=s3.BucketEncryption.KMS,
             encryption_key=kms_key,
             block_public_access=s3.BlockPublicAccess.BLOCK_ALL,

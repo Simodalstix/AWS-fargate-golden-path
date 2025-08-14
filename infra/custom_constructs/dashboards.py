@@ -5,6 +5,7 @@ from aws_cdk import (
     aws_rds as rds,
     aws_wafv2 as wafv2,
     Duration,
+    Stack,
 )
 from constructs import Construct
 
@@ -39,10 +40,10 @@ class Dashboards(Construct):
         )
 
         # Add widgets to dashboard
-        self.dashboard.add_widgets(self._create_alb_widgets())
-        self.dashboard.add_widgets(self._create_ecs_widgets())
-        self.dashboard.add_widgets(self._create_rds_widgets())
-        self.dashboard.add_widgets(self._create_waf_widgets())
+        self.dashboard.add_widgets(*self._create_alb_widgets())
+        self.dashboard.add_widgets(*self._create_ecs_widgets())
+        self.dashboard.add_widgets(*self._create_rds_widgets())
+        self.dashboard.add_widgets(*self._create_waf_widgets())
 
     def _create_alb_widgets(self):
         """Create ALB monitoring widgets"""
@@ -340,7 +341,7 @@ class Dashboards(Construct):
                     metric_name="AllowedRequests",
                     dimensions_map={
                         "WebACL": self.waf_web_acl.web_acl.name,
-                        "Region": self.region,
+                        "Region": Stack.of(self).region,
                         "Rule": "ALL",
                     },
                     statistic="Sum",
@@ -353,7 +354,7 @@ class Dashboards(Construct):
                     metric_name="BlockedRequests",
                     dimensions_map={
                         "WebACL": self.waf_web_acl.web_acl.name,
-                        "Region": self.region,
+                        "Region": Stack.of(self).region,
                         "Rule": "ALL",
                     },
                     statistic="Sum",

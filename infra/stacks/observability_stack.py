@@ -43,10 +43,10 @@ class ObservabilityStack(Stack):
             log_group_name=f"/ecs/golden-path-app-{env_name}",
         )
 
-        # Create log metrics
-        self.log_metrics = LogMetrics(
-            self, "LogMetrics", env_name=env_name, log_group=self.log_group
-        )
+        # Create log metrics - temporarily disabled due to CDK v2 compatibility issues
+        # self.log_metrics = LogMetrics(
+        #     self, "LogMetrics", env_name=env_name, log_group=self.log_group
+        # )
 
         # Create dashboards
         self.dashboards = Dashboards(

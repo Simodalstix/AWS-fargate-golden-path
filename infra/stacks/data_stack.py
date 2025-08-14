@@ -157,9 +157,6 @@ class DataStack(Stack):
             deletion_protection=False,  # Set to True for production
             removal_policy=RemovalPolicy.DESTROY,  # Set to RETAIN for production
             cluster_identifier=f"golden-path-aurora-{self.env_name}",
-            monitoring_interval=Duration.seconds(60),
-            enable_performance_insights=True,
-            performance_insight_retention=rds.PerformanceInsightRetention.DEFAULT,
             cloudwatch_logs_exports=["postgresql"],
         )
 

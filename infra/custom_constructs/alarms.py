@@ -1,5 +1,6 @@
 from aws_cdk import (
     aws_cloudwatch as cloudwatch,
+    aws_cloudwatch_actions as cw_actions,
     aws_sns as sns,
     aws_sns_subscriptions as sns_subscriptions,
     aws_elasticloadbalancingv2 as elbv2,
@@ -7,6 +8,7 @@ from aws_cdk import (
     aws_rds as rds,
     aws_wafv2 as wafv2,
     Duration,
+    Stack,
 )
 from constructs import Construct
 from typing import Optional
@@ -99,7 +101,7 @@ class Alarms(Construct):
             comparison_operator=cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
             treat_missing_data=cloudwatch.TreatMissingData.NOT_BREACHING,
         )
-        alb_5xx_alarm.add_alarm_action(sns.SnsAction(self.alarm_topic))
+        alb_5xx_alarm.add_alarm_action(cw_actions.SnsAction(self.alarm_topic))
         self.alarms.append(alb_5xx_alarm)
 
         # ALB Response Time Alarm
@@ -121,7 +123,7 @@ class Alarms(Construct):
             comparison_operator=cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
             treat_missing_data=cloudwatch.TreatMissingData.NOT_BREACHING,
         )
-        alb_response_time_alarm.add_alarm_action(sns.SnsAction(self.alarm_topic))
+        alb_response_time_alarm.add_alarm_action(cw_actions.SnsAction(self.alarm_topic))
         self.alarms.append(alb_response_time_alarm)
 
         # ALB Unhealthy Targets Alarm
@@ -143,7 +145,9 @@ class Alarms(Construct):
             comparison_operator=cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
             treat_missing_data=cloudwatch.TreatMissingData.NOT_BREACHING,
         )
-        alb_unhealthy_targets_alarm.add_alarm_action(sns.SnsAction(self.alarm_topic))
+        alb_unhealthy_targets_alarm.add_alarm_action(
+            cw_actions.SnsAction(self.alarm_topic)
+        )
         self.alarms.append(alb_unhealthy_targets_alarm)
 
     def _create_ecs_alarms(self):
@@ -170,7 +174,7 @@ class Alarms(Construct):
             comparison_operator=cloudwatch.ComparisonOperator.LESS_THAN_THRESHOLD,
             treat_missing_data=cloudwatch.TreatMissingData.BREACHING,
         )
-        ecs_task_count_alarm.add_alarm_action(sns.SnsAction(self.alarm_topic))
+        ecs_task_count_alarm.add_alarm_action(cw_actions.SnsAction(self.alarm_topic))
         self.alarms.append(ecs_task_count_alarm)
 
         # ECS CPU Utilization Alarm
@@ -195,7 +199,7 @@ class Alarms(Construct):
             comparison_operator=cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
             treat_missing_data=cloudwatch.TreatMissingData.NOT_BREACHING,
         )
-        ecs_cpu_alarm.add_alarm_action(sns.SnsAction(self.alarm_topic))
+        ecs_cpu_alarm.add_alarm_action(cw_actions.SnsAction(self.alarm_topic))
         self.alarms.append(ecs_cpu_alarm)
 
         # ECS Memory Utilization Alarm
@@ -220,7 +224,7 @@ class Alarms(Construct):
             comparison_operator=cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
             treat_missing_data=cloudwatch.TreatMissingData.NOT_BREACHING,
         )
-        ecs_memory_alarm.add_alarm_action(sns.SnsAction(self.alarm_topic))
+        ecs_memory_alarm.add_alarm_action(cw_actions.SnsAction(self.alarm_topic))
         self.alarms.append(ecs_memory_alarm)
 
     def _create_rds_alarms(self):
@@ -254,7 +258,7 @@ class Alarms(Construct):
             comparison_operator=cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
             treat_missing_data=cloudwatch.TreatMissingData.NOT_BREACHING,
         )
-        rds_cpu_alarm.add_alarm_action(sns.SnsAction(self.alarm_topic))
+        rds_cpu_alarm.add_alarm_action(cw_actions.SnsAction(self.alarm_topic))
         self.alarms.append(rds_cpu_alarm)
 
         # RDS Database Connections Alarm
@@ -276,7 +280,7 @@ class Alarms(Construct):
             comparison_operator=cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
             treat_missing_data=cloudwatch.TreatMissingData.NOT_BREACHING,
         )
-        rds_connections_alarm.add_alarm_action(sns.SnsAction(self.alarm_topic))
+        rds_connections_alarm.add_alarm_action(cw_actions.SnsAction(self.alarm_topic))
         self.alarms.append(rds_connections_alarm)
 
         # RDS Free Storage Space Alarm
@@ -298,7 +302,7 @@ class Alarms(Construct):
             comparison_operator=cloudwatch.ComparisonOperator.LESS_THAN_THRESHOLD,
             treat_missing_data=cloudwatch.TreatMissingData.NOT_BREACHING,
         )
-        rds_storage_alarm.add_alarm_action(sns.SnsAction(self.alarm_topic))
+        rds_storage_alarm.add_alarm_action(cw_actions.SnsAction(self.alarm_topic))
         self.alarms.append(rds_storage_alarm)
 
     def _create_waf_alarms(self):
@@ -314,7 +318,7 @@ class Alarms(Construct):
                 metric_name="BlockedRequests",
                 dimensions_map={
                     "WebACL": self.waf_web_acl.web_acl.name,
-                    "Region": self.region,
+                    "Region": Stack.of(self).region,
                     "Rule": "ALL",
                 },
                 statistic="Sum",
@@ -326,7 +330,7 @@ class Alarms(Construct):
             comparison_operator=cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
             treat_missing_data=cloudwatch.TreatMissingData.NOT_BREACHING,
         )
-        waf_blocked_alarm.add_alarm_action(sns.SnsAction(self.alarm_topic))
+        waf_blocked_alarm.add_alarm_action(cw_actions.SnsAction(self.alarm_topic))
         self.alarms.append(waf_blocked_alarm)
 
         # WAF Rate Limit Triggered Alarm
@@ -340,7 +344,7 @@ class Alarms(Construct):
                 metric_name="BlockedRequests",
                 dimensions_map={
                     "WebACL": self.waf_web_acl.web_acl.name,
-                    "Region": self.region,
+                    "Region": Stack.of(self).region,
                     "Rule": "RateLimitRule",
                 },
                 statistic="Sum",
@@ -352,5 +356,5 @@ class Alarms(Construct):
             comparison_operator=cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
             treat_missing_data=cloudwatch.TreatMissingData.NOT_BREACHING,
         )
-        waf_rate_limit_alarm.add_alarm_action(sns.SnsAction(self.alarm_topic))
+        waf_rate_limit_alarm.add_alarm_action(cw_actions.SnsAction(self.alarm_topic))
         self.alarms.append(waf_rate_limit_alarm)

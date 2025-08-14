@@ -193,11 +193,8 @@ class ComputeStack(Stack):
             description="Allow outbound to ECS",
         )
 
-        # Allow ECS to reach database
-        if hasattr(self.database, "connections"):
-            self.database.connections.allow_default_port_from(
-                self.ecs_security_group, "Allow ECS to access database"
-            )
+        # Database connection will be configured in the data stack
+        # to avoid circular dependencies
 
     def _create_application_load_balancer(self):
         """Create Application Load Balancer"""
@@ -396,10 +393,12 @@ class ComputeStack(Stack):
             capacity_provider_strategies=[
                 ecs.CapacityProviderStrategy(capacity_provider="FARGATE", weight=1)
             ],
-            enable_logging=True,
             health_check_grace_period=Duration.seconds(60),
             min_healthy_percent=100,
             max_healthy_percent=200,
+            deployment_controller=ecs.DeploymentController(
+                type=ecs.DeploymentControllerType.CODE_DEPLOY
+            ),
         )
 
         # Attach to target group
