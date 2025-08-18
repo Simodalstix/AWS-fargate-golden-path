@@ -153,8 +153,11 @@ class DataStack(Stack):
             security_groups=[self.db_security_group],
             subnet_group=self.db_subnet_group,
             default_database_name="goldenpath",
-            backup=rds.BackupProps(retention=Duration.days(7)),
-            deletion_protection=False,  # Set to True for production
+            backup=rds.BackupProps(
+                retention=Duration.days(30),
+                preferred_window="03:00-04:00",  # Off-peak hours
+            ),
+            deletion_protection=env_name != "dev",  # Only protect non-dev environments
             removal_policy=RemovalPolicy.DESTROY,  # Set to RETAIN for production
             cluster_identifier=f"golden-path-aurora-{self.env_name}",
             cloudwatch_logs_exports=["postgresql"],

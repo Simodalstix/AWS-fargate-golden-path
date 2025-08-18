@@ -206,6 +206,7 @@ class ComputeStack(Stack):
             load_balancer_name=f"golden-path-alb-{self.env_name}",
             security_group=self.alb_security_group,
             vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC),
+            deletion_protection=env_name != "dev",  # Only protect non-dev environments
         )
 
         # Enable access logging
@@ -330,9 +331,7 @@ class ComputeStack(Stack):
         # Add main application container
         self.app_container = self.task_definition.add_container(
             "AppContainer",
-            image=ecs.ContainerImage.from_registry(
-                "public.ecr.aws/nginx/nginx:latest"
-            ),  # Placeholder image
+            image=ecs.ContainerImage.from_asset("../app"),  # Build from local app
             container_name="app",
             logging=ecs.LogDrivers.aws_logs(
                 stream_prefix="app", log_group=self.log_group

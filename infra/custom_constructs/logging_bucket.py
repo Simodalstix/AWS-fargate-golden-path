@@ -104,3 +104,27 @@ class LoggingBucket(Construct):
                 resources=[self.bucket.bucket_arn],
             )
         )
+
+        # Enforce HTTPS-only access
+        self.bucket.add_to_resource_policy(
+            iam.PolicyStatement(
+                sid="DenyInsecureConnections",
+                effect=iam.Effect.DENY,
+                principals=[iam.AnyPrincipal()],
+                actions=["s3:*"],
+                resources=[self.bucket.bucket_arn, f"{self.bucket.bucket_arn}/*"],
+                conditions={"Bool": {"aws:SecureTransport": "false"}},
+            )
+        )
+
+        # Enforce HTTPS-only access
+        self.bucket.add_to_resource_policy(
+            iam.PolicyStatement(
+                sid="DenyInsecureConnections",
+                effect=iam.Effect.DENY,
+                principals=[iam.AnyPrincipal()],
+                actions=["s3:*"],
+                resources=[self.bucket.bucket_arn, f"{self.bucket.bucket_arn}/*"],
+                conditions={"Bool": {"aws:SecureTransport": "false"}},
+            )
+        )
