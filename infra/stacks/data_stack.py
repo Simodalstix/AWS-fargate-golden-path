@@ -157,7 +157,7 @@ class DataStack(Stack):
                 retention=Duration.days(30),
                 preferred_window="03:00-04:00",  # Off-peak hours
             ),
-            deletion_protection=env_name != "dev",  # Only protect non-dev environments
+            deletion_protection=self.env_name != "dev",  # Only protect non-dev environments
             removal_policy=RemovalPolicy.DESTROY,  # Set to RETAIN for production
             cluster_identifier=f"golden-path-aurora-{self.env_name}",
             cloudwatch_logs_exports=["postgresql"],
