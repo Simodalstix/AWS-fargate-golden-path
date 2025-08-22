@@ -20,6 +20,10 @@ cdk deploy --parameters alarm_email=your-email@example.com
 
 ## Architecture
 
+![ECS Fargate Golden Path Architecture](diagrams/ecs-golden-path-diagram.svg)
+
+*Architecture diagram created using AWS official icons and Excalidraw*
+
 ```
 Internet → WAF → ALB → ECS Fargate (2 AZs) → Aurora PostgreSQL
                  ↓
