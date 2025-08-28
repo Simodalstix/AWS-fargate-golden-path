@@ -4,7 +4,7 @@
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/Simodalstix/AWS-ecs-fargate-golden-path/ci.yml?branch=main)](https://github.com/Simodalstix/AWS-ecs-fargate-golden-path/actions)
-[![Release](https://img.shields.io/github/v/release/Simodalstix/AWS-ecs-fargate-golden-path)](https://github.com/Simodalstix/AWS-ecs-fargate-golden-path/releases)
+[![Release](https://img.shields.io/github/v/release/Simodalstix/AWS-ecs-fargate-golden-path?include_prereleases)](https://github.com/Simodalstix/AWS-ecs-fargate-golden-path/releases)
 
 ## In a Nutshell
 
