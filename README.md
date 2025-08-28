@@ -28,12 +28,8 @@ cdk deploy --parameters alarm_email=your-email@example.com
 
 ![ECS Fargate Golden Path Architecture](diagrams/ecs-golden-path-diagram.svg)
 
-*Architecture diagram created using AWS official icons and Excalidraw*
+_Architecture diagram created using AWS official icons and Excalidraw_
 
-```
-Internet → WAF → ALB → ECS Fargate (2 AZs) → Aurora PostgreSQL
-                 ↓
-            CloudWatch + X-Ray + SNS Alarms
 ```
 
 **Core Components:**
@@ -71,20 +67,22 @@ Trigger infrastructure failures via AWS Fault Injection Simulator:
 ## Project Structure
 
 ```
-├── app/                    # FastAPI application + Dockerfile
-├── infra/                  # CDK infrastructure code
-│   ├── stacks/            # Network, compute, data, observability, FIS
-│   ├── custom_constructs/ # Reusable CDK components
-│   └── tests/             # Unit tests for infrastructure
-├── ops/                   # Operations and chaos engineering
-│   ├── runbooks/          # Incident response procedures
-│   ├── gamedays/          # Chaos experiment scenarios
-│   └── queries/           # CloudWatch Insights queries
-├── docs/                  # Architecture decisions and documentation
-│   └── adr/               # Architecture Decision Records
-├── .github/               # CI/CD workflows and templates
-└── diagrams/              # Architecture diagrams
-```
+
+├── app/ # FastAPI application + Dockerfile
+├── infra/ # CDK infrastructure code
+│ ├── stacks/ # Network, compute, data, observability, FIS
+│ ├── custom_constructs/ # Reusable CDK components
+│ └── tests/ # Unit tests for infrastructure
+├── ops/ # Operations and chaos engineering
+│ ├── runbooks/ # Incident response procedures
+│ ├── gamedays/ # Chaos experiment scenarios
+│ └── queries/ # CloudWatch Insights queries
+├── docs/ # Architecture decisions and documentation
+│ └── adr/ # Architecture Decision Records
+├── .github/ # CI/CD workflows and templates
+└── diagrams/ # Architecture diagrams
+
+````
 
 ## Key Features
 
@@ -118,9 +116,10 @@ Trigger infrastructure failures via AWS Fault Injection Simulator:
 **Unit Tests:**
 ```bash
 cd infra && python -m pytest tests/ -v
-```
+````
 
 **Integration Testing:**
+
 ```bash
 # Validate CDK synthesis
 export CDK_DEFAULT_ACCOUNT=123456789012 CDK_DEFAULT_REGION=us-east-1
@@ -134,6 +133,7 @@ curl https://your-alb-dns/work?ms=100
 ## Deployment Validation
 
 After deployment, verify:
+
 1. **ALB Health**: All targets healthy in target groups
 2. **ECS Tasks**: 2 tasks running across different AZs
 3. **Database**: Aurora cluster writer/reader endpoints accessible
@@ -151,6 +151,7 @@ After deployment, verify:
 ## Chaos Experiments
 
 **AWS Fault Injection Simulator Integration:**
+
 - ECS task termination and CPU stress experiments
 - Network latency injection for resilience testing
 - Aurora failover simulation
