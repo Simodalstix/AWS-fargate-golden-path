@@ -36,4 +36,4 @@ jobs:
         CDK_DEFAULT_ACCOUNT: "123456789012"
         CDK_DEFAULT_REGION: "us-east-1"
       run: |
-        cd infra && cdk synth --all
+        cd infra && cdk synth --all --no-lookups
