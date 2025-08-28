@@ -18,7 +18,6 @@ class TestComputeStack:
         """Create a CDK app for testing"""
         return cdk.App(context={
             "@aws-cdk/aws-s3:createDefaultLoggingPolicy": True,
-            "@aws-cdk/core:enableStackNameDuplicates": True,
         })
 
     @pytest.fixture
