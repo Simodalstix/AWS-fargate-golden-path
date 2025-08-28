@@ -33,8 +33,11 @@ jobs:
         flake8 infra/ app/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     
     - name: Test with pytest
+      env:
+        CDK_DEFAULT_ACCOUNT: "123456789012"
+        CDK_DEFAULT_REGION: "us-east-1"
       run: |
-        cd infra && python -m pytest tests/ -v --cov=stacks --cov=custom_constructs
+        cd infra && python -m pytest tests/ -v --cov=stacks --cov=custom_constructs --cov-fail-under=30
     
     - name: CDK Synth
       env:

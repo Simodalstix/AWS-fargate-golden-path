@@ -16,16 +16,21 @@ class TestComputeStack:
     @pytest.fixture
     def app(self):
         """Create a CDK app for testing"""
-        return cdk.App()
+        return cdk.App(context={
+            "@aws-cdk/aws-s3:createDefaultLoggingPolicy": True,
+            "@aws-cdk/core:enableStackNameDuplicates": True,
+        })
 
     @pytest.fixture
     def network_stack(self, app):
         """Create a network stack for testing"""
-        return NetworkStack(app, "TestNetworkStack", env_name="test", use_one_nat=True)
+        env = cdk.Environment(account="123456789012", region="us-east-1")
+        return NetworkStack(app, "TestNetworkStack", env_name="test", use_one_nat=True, env=env)
 
     @pytest.fixture
     def data_stack(self, app, network_stack):
         """Create a data stack for testing"""
+        env = cdk.Environment(account="123456789012", region="us-east-1")
         return DataStack(
             app,
             "TestDataStack",
@@ -35,11 +40,13 @@ class TestComputeStack:
             rotate_secrets=False,
             min_acu=0.5,
             max_acu=1,
+            env=env,
         )
 
     @pytest.fixture
     def compute_stack(self, app, network_stack, data_stack):
         """Create a compute stack for testing"""
+        env = cdk.Environment(account="123456789012", region="us-east-1")
         return ComputeStack(
             app,
             "TestComputeStack",
@@ -50,7 +57,7 @@ class TestComputeStack:
             desired_count=2,
             cpu=512,
             memory_mib=1024,
-            enable_break_fix=True,
+            env=env,
         )
 
     def test_ecs_service_created(self, compute_stack):
