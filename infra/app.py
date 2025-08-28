@@ -6,6 +6,7 @@ from stacks.data_stack import DataStack
 from stacks.compute_stack import ComputeStack
 from stacks.observability_stack import ObservabilityStack
 from stacks.deployment_stack import DeploymentStack
+from stacks.fis_stack import FISStack
 
 app = cdk.App()
 
@@ -21,7 +22,7 @@ max_acu = app.node.try_get_context("maxAcu") or 1
 desired_count = app.node.try_get_context("desiredCount") or 2
 cpu = app.node.try_get_context("cpu") or 512
 memory_mib = app.node.try_get_context("memoryMiB") or 1024
-enable_break_fix = app.node.try_get_context("enableBreakFix") or True
+enable_fis = app.node.try_get_context("enableFIS") or True
 
 # Environment
 env = cdk.Environment(
@@ -61,7 +62,7 @@ compute_stack = ComputeStack(
     desired_count=desired_count,
     cpu=cpu,
     memory_mib=memory_mib,
-    enable_break_fix=enable_break_fix,
+
     env=env,
 )
 
@@ -90,6 +91,22 @@ deployment_stack = DeploymentStack(
     env_name=env_name,
     env=env,
 )
+
+# FIS Stack (optional)
+fis_stack = None
+if enable_fis:
+    fis_stack = FISStack(
+        app,
+        f"GoldenPath-FIS-{env_name}",
+        vpc=network_stack.vpc,
+        ecs_cluster=compute_stack.ecs_cluster,
+        ecs_service=compute_stack.ecs_service,
+        database=data_stack.database,
+        stop_condition_alarms=observability_stack.critical_alarms,
+        env_name=env_name,
+        env=env,
+    )
+    fis_stack.add_dependency(observability_stack)
 
 # Add dependencies
 data_stack.add_dependency(network_stack)

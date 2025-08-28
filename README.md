@@ -4,7 +4,7 @@
 
 A production-ready ECS Fargate web service with comprehensive observability, blue/green deployments, and built-in chaos engineering scenarios for incident response training. Deploy once, break things safely, learn how to fix them.
 
-**What you get:** ALB + ECS Fargate + Aurora + WAF + CloudWatch dashboards/alarms + X-Ray tracing + CodeDeploy blue/green + break/fix scenarios via SSM parameters.
+**What you get:** ALB + ECS Fargate + Aurora + WAF + CloudWatch dashboards/alarms + X-Ray tracing + CodeDeploy blue/green + AWS Fault Injection Simulator chaos experiments.
 
 ## Quick Start
 
@@ -38,21 +38,22 @@ Internet → WAF → ALB → ECS Fargate (2 AZs) → Aurora PostgreSQL
 - **Observability**: CloudWatch dashboards, 10+ alarms, structured JSON logs
 - **Deployment**: CodeDeploy blue/green with auto-rollback on alarms
 
-## Break/Fix Lab
+## Chaos Engineering Lab
 
-Trigger failures via SSM Parameter `/golden/failure_mode`:
+Trigger infrastructure failures via AWS Fault Injection Simulator:
 
-| Mode | Effect | Learning |
-|------|--------|----------|
-| `return_500` | Health checks fail → ALB 5xx alarms | Unhealthy targets, rollback procedures |
-| `connection_leak` | DB connections exhaust → RDS alarms | Connection pooling, task restarts |
-| `none` | Normal operation | Reset to healthy state |
+| Experiment | Effect | Learning |
+|------------|--------|----------|
+| **ECS Task Termination** | Kill 50% of tasks → Auto-recovery | Task resilience, health checks |
+| **CPU Stress** | 80% CPU load → Autoscaling | Performance under load |
+| **Network Latency** | 200ms delays → Response time | Latency tolerance |
+| **Aurora Failover** | Force DB failover → Connection handling | Database resilience |
 
 **Game Day Scenarios:**
-1. **Unhealthy Targets** - Set failure mode, observe alarms, execute rollback
+1. **Task Termination** - Run FIS experiment, observe auto-recovery
 2. **Secret Drift** - Rotate DB secret, hit `/db` until errors, redeploy service
-3. **CPU Burn** - Load test `/work` endpoint, watch autoscaling
-4. **WAF Blocks** - Tune rate rules, observe block metrics
+3. **CPU Stress** - FIS CPU experiment, watch autoscaling trigger
+4. **Network Chaos** - Inject latency, observe p95 metrics
 
 ## Application Endpoints
 
@@ -88,11 +89,11 @@ Trigger failures via SSM Parameter `/golden/failure_mode`:
 - Structured JSON application logs
 - 10+ CloudWatch alarms with SNS notifications
 
-**Break/Fix Learning:**
-- Safe failure injection via SSM parameters
-- Real-world incident scenarios
-- Guided runbooks for resolution
-- MTTR measurement and improvement
+**Chaos Engineering:**
+- Professional failure injection via AWS FIS
+- Infrastructure-level chaos experiments
+- Automated rollback on alarm breach
+- Enterprise-grade resilience testing
 
 ## Cost Considerations
 
@@ -108,12 +109,13 @@ Trigger failures via SSM Parameter `/golden/failure_mode`:
 4. **Learn** - Follow runbooks to resolve incidents
 5. **Extend** - Add Fault Injection Simulator, RDS Proxy, CDK Pipeline
 
-## Advanced Enhancements
+## Chaos Experiments
 
-**Fault Injection Simulator Integration** (~4-6 hours work):
-- Chaos experiments for network latency, CPU stress, memory pressure
-- Automated failure injection with rollback
-- Integration with existing CloudWatch alarms
-- Would add `fis_stack.py` and experiment templates
+**AWS Fault Injection Simulator Integration:**
+- ECS task termination and CPU stress experiments
+- Network latency injection for resilience testing
+- Aurora failover simulation
+- Automated stop conditions via CloudWatch alarms
+- Professional chaos engineering patterns
 
 Ready to break things safely and learn incident response? Deploy and start your first game day! 🚀

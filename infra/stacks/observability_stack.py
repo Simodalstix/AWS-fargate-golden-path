@@ -72,6 +72,12 @@ class ObservabilityStack(Stack):
             webhook_url=webhook_url,
         )
 
+        # Expose critical alarms for FIS stop conditions
+        self.critical_alarms = [
+            alarm for alarm in self.alarms.alarms 
+            if "5xx" in alarm.alarm_name or "UnhealthyTargets" in alarm.alarm_name or "TaskCount" in alarm.alarm_name
+        ]
+
         # Add tags
         Tags.of(self.dashboards.dashboard).add("Environment", env_name)
         Tags.of(self.dashboards.dashboard).add("Project", "ECS-Fargate-Golden-Path")

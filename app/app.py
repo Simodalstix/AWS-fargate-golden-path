@@ -60,40 +60,11 @@ app.add_middleware(XRayMiddleware, name="golden-path-app")
 
 # Global variables
 db_connection = None
-ssm_client = boto3.client("ssm")
 secrets_client = boto3.client("secretsmanager")
 
 # Configuration
 DB_SECRET_ARN = os.getenv("DB_SECRET_ARN", "")
-PARAM_FAILURE_MODE = os.getenv("PARAM_FAILURE_MODE", "/golden/failure_mode")
 AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
-
-
-class FailureMode:
-    """Manages application failure modes for break/fix lab"""
-
-    @staticmethod
-    def get_current_mode() -> str:
-        """Get current failure mode from SSM Parameter Store"""
-        try:
-            if not PARAM_FAILURE_MODE:
-                return "none"
-
-            response = ssm_client.get_parameter(Name=PARAM_FAILURE_MODE)
-            return response["Parameter"]["Value"]
-        except Exception as e:
-            logger.warning("Failed to get failure mode parameter", error=str(e))
-            return "none"
-
-    @staticmethod
-    def should_return_500() -> bool:
-        """Check if should return 500 status code"""
-        return FailureMode.get_current_mode() == "return_500"
-
-    @staticmethod
-    def should_leak_connections() -> bool:
-        """Check if should leak database connections"""
-        return FailureMode.get_current_mode() == "connection_leak"
 
 
 class DatabaseManager:
@@ -148,10 +119,8 @@ class DatabaseManager:
             "connection_info": connection,
         }
 
-        # Don't close connection if in connection leak mode
-        if not FailureMode.should_leak_connections():
-            # In real app, you would properly close connections here
-            pass
+        # In real app, you would properly close connections here
+        pass
 
         return result
 
@@ -201,32 +170,17 @@ async def logging_middleware(request: Request, call_next):
 @app.get("/")
 async def root():
     """Root endpoint returning application information"""
-
-    # Check failure mode
-    if FailureMode.should_return_500():
-        logger.error("Returning 500 due to failure mode", failure_mode="return_500")
-        raise HTTPException(status_code=500, detail="Simulated server error")
-
     return {
         "message": "Golden Path Sample Application",
         "version": "1.0.0",
         "timestamp": datetime.utcnow().isoformat(),
         "region": AWS_REGION,
-        "failure_mode": FailureMode.get_current_mode(),
     }
 
 
 @app.get("/healthz")
 async def health_check():
     """Health check endpoint for ALB target group"""
-
-    # Check failure mode - if return_500, make health check fail
-    if FailureMode.should_return_500():
-        logger.error(
-            "Health check failing due to failure mode", failure_mode="return_500"
-        )
-        raise HTTPException(status_code=500, detail="Health check failed")
-
     return {
         "status": "healthy",
         "timestamp": datetime.utcnow().isoformat(),
@@ -243,12 +197,6 @@ async def simulate_work(
     ms: int = Query(default=100, description="Milliseconds of CPU work to simulate")
 ):
     """Simulate CPU-intensive work for load testing and autoscaling"""
-
-    # Check failure mode
-    if FailureMode.should_return_500():
-        logger.error("Returning 500 due to failure mode", failure_mode="return_500")
-        raise HTTPException(status_code=500, detail="Simulated server error")
-
     # Limit work to prevent abuse
     ms = min(ms, 5000)  # Max 5 seconds
 
@@ -275,12 +223,6 @@ async def simulate_work(
 @app.get("/db")
 async def database_query():
     """Perform a simple database query"""
-
-    # Check failure mode
-    if FailureMode.should_return_500():
-        logger.error("Returning 500 due to failure mode", failure_mode="return_500")
-        raise HTTPException(status_code=500, detail="Simulated server error")
-
     try:
         # Execute a simple query
         result = DatabaseManager.execute_query("SELECT 1 as test_column")
@@ -291,7 +233,6 @@ async def database_query():
             "message": "Database query successful",
             "result": result,
             "timestamp": datetime.utcnow().isoformat(),
-            "failure_mode": FailureMode.get_current_mode(),
         }
 
     except Exception as e:
@@ -302,61 +243,19 @@ async def database_query():
 @app.get("/metrics")
 async def metrics():
     """Return application metrics"""
-
-    # Check failure mode
-    if FailureMode.should_return_500():
-        logger.error("Returning 500 due to failure mode", failure_mode="return_500")
-        raise HTTPException(status_code=500, detail="Simulated server error")
-
     return {
         "timestamp": datetime.utcnow().isoformat(),
-        "failure_mode": FailureMode.get_current_mode(),
         "database_connection": DatabaseManager.get_connection(),
         "environment": {
             "region": AWS_REGION,
             "db_secret_arn": (
                 DB_SECRET_ARN[:20] + "..." if DB_SECRET_ARN else "not_configured"
             ),
-            "failure_mode_param": PARAM_FAILURE_MODE,
         },
     }
 
 
-@app.get("/admin/failure-mode")
-async def get_failure_mode():
-    """Get current failure mode (admin endpoint)"""
-    return {
-        "failure_mode": FailureMode.get_current_mode(),
-        "timestamp": datetime.utcnow().isoformat(),
-    }
 
-
-@app.post("/admin/failure-mode/{mode}")
-async def set_failure_mode(mode: str):
-    """Set failure mode (admin endpoint)"""
-    try:
-        if not PARAM_FAILURE_MODE:
-            raise HTTPException(
-                status_code=500, detail="Failure mode parameter not configured"
-            )
-
-        # Update SSM parameter
-        ssm_client.put_parameter(
-            Name=PARAM_FAILURE_MODE, Value=mode, Type="String", Overwrite=True
-        )
-
-        logger.info("Failure mode updated", new_mode=mode)
-
-        return {
-            "message": f"Failure mode set to: {mode}",
-            "timestamp": datetime.utcnow().isoformat(),
-        }
-
-    except Exception as e:
-        logger.error("Failed to set failure mode", error=str(e), mode=mode)
-        raise HTTPException(
-            status_code=500, detail=f"Failed to set failure mode: {str(e)}"
-        )
 
 
 if __name__ == "__main__":
