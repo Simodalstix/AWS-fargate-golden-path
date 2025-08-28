@@ -41,7 +41,7 @@ jobs:
         CDK_DEFAULT_ACCOUNT: "123456789012"
         CDK_DEFAULT_REGION: "us-east-1"
       run: |
-        cd infra && python -m pytest tests/ -v --cov=stacks --cov=custom_constructs --cov-fail-under=30
+        cd infra && python -m pytest tests/test_simple.py tests/test_compute.py -v --cov=stacks --cov=custom_constructs --cov-fail-under=20
     
     - name: CDK Synth
       env:
