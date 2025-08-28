@@ -204,7 +204,7 @@ class FISStack(Stack):
             targets={
                 "PrivateSubnetsTarget": {
                     "resourceType": "aws:ec2:subnet",
-                    "resourceArns": [subnet.subnet_arn for subnet in self.vpc.private_subnets],
+                    "resourceArns": [f"arn:aws:ec2:{Stack.of(self).region}:{Stack.of(self).account}:subnet/{subnet.subnet_id}" for subnet in self.vpc.private_subnets],
                     "selectionMode": "COUNT(1)",
                 }
             },
@@ -244,7 +244,7 @@ class FISStack(Stack):
                 targets={
                     "AuroraClusterTarget": {
                         "resourceType": "aws:rds:cluster",
-                        "resourceArns": [self.database.cluster_arn],
+                        "resourceArns": [f"arn:aws:rds:{Stack.of(self).region}:{Stack.of(self).account}:cluster:{self.database.cluster_identifier}"],
                         "selectionMode": "ALL",
                     }
                 },

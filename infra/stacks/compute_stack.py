@@ -71,7 +71,7 @@ class ComputeStack(Stack):
         )
 
         # Create ECS cluster
-        self.cluster = ecs.Cluster(
+        self.ecs_cluster = ecs.Cluster(
             self,
             "ECSCluster",
             cluster_name=f"golden-path-cluster-{env_name}",
@@ -106,6 +106,9 @@ class ComputeStack(Stack):
             resource_arn=self.alb.load_balancer_arn,
             web_acl_arn=self.waf_web_acl.web_acl_arn,
         )
+
+        # Alias for backward compatibility
+        self.cluster = self.ecs_cluster
 
         # Add tags
         Tags.of(self.cluster).add("Environment", env_name)
@@ -380,7 +383,7 @@ class ComputeStack(Stack):
         self.ecs_service = ecs.FargateService(
             self,
             "ECSService",
-            cluster=self.cluster,
+            cluster=self.ecs_cluster,
             task_definition=self.task_definition,
             service_name=f"golden-path-service-{self.env_name}",
             desired_count=desired_count,
