@@ -3,8 +3,8 @@
 [![CDK](https://img.shields.io/badge/CDK-2.100.0-orange.svg)](https://github.com/aws/aws-cdk)
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/Simodalstix/AWS-ecs-fargate-golden-path/ci.yml?branch=main)](https://github.com/Simodalstix/AWS-ecs-fargate-golden-path/actions)
-[![Release](https://img.shields.io/github/v/release/Simodalstix/AWS-ecs-fargate-golden-path?include_prereleases)](https://github.com/Simodalstix/AWS-ecs-fargate-golden-path/releases)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/Simodalstix/AWS-fargate-golden-path/ci.yml?branch=main)](https://github.com/Simodalstix/AWS-fargate-golden-path/actions)
+[![Release](https://img.shields.io/github/v/release/Simodalstix/AWS-fargate-golden-path?include_prereleases)](https://github.com/Simodalstix/AWS-fargate-golden-path/releases)
 
 ## In a Nutshell
 
