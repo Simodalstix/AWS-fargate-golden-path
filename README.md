@@ -30,8 +30,6 @@ cdk deploy --parameters alarm_email=your-email@example.com
 
 _Architecture diagram created using AWS official icons and Excalidraw_
 
-```
-
 **Core Components:**
 - **VPC**: 2 AZs, public/private subnets, 1 NAT Gateway
 - **ECS Fargate**: 2 tasks, health checks, X-Ray sidecars, ECS Exec enabled
@@ -67,7 +65,6 @@ Trigger infrastructure failures via AWS Fault Injection Simulator:
 ## Project Structure
 
 ```
-
 ├── app/ # FastAPI application + Dockerfile
 ├── infra/ # CDK infrastructure code
 │ ├── stacks/ # Network, compute, data, observability, FIS
@@ -81,8 +78,7 @@ Trigger infrastructure failures via AWS Fault Injection Simulator:
 │ └── adr/ # Architecture Decision Records
 ├── .github/ # CI/CD workflows and templates
 └── diagrams/ # Architecture diagrams
-
-````
+```
 
 ## Key Features
 
@@ -116,7 +112,7 @@ Trigger infrastructure failures via AWS Fault Injection Simulator:
 **Unit Tests:**
 ```bash
 cd infra && python -m pytest tests/ -v
-````
+```
 
 **Integration Testing:**
 
